@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(java -version)",
+      "PowerShell($mvn = Get-Command mvn -ErrorAction SilentlyContinue; if \\($mvn\\) { Write-Output \"mvn: $\\($mvn.Source\\)\" } else { Write-Output \"mvn NOT FOUND\" }; $java = Get-Command java -ErrorAction SilentlyContinue; if \\($java\\) { java -version } else { Write-Output \"java NOT FOUND\" })",
+      "PowerShell(mvn -q -o compile 2>&1)"
+    ]
+  }
+}

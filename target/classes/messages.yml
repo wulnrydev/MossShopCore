@@ -1,0 +1,18 @@
+# ============================================================
+#  MossShopCore - Mesajlar
+#  Tum mesajlar Adventure API ile gonderilir.
+#  Kullanilabilir placeholderlar mesaja gore degisir:
+#   %prefix% %player% %item% %amount% %price% %unit-price% %total% %balance%
+# ============================================================
+
+insufficient-money: "%prefix%&cYetersiz bakiye! &7Gerekli: &#ffd500%total%$ &7| Bakiye: &#ffd500%balance%$"
+inventory-full: "%prefix%&cEnvanterinde yeterli bos yer yok!"
+invalid-item: "%prefix%&cBu urun gecersiz veya artik mevcut degil."
+purchase-failed: "%prefix%&cSatin alma islemi basarisiz oldu. Lutfen tekrar dene."
+purchase-success: "%prefix%&#00D420%amount%x &7%item% &#00D420satin aldin! &7(&#ffd500%total%$&7)"
+
+no-permission: "%prefix%&cBunu yapmaya yetkin yok."
+players-only: "%prefix%&cBu komut sadece oyuncular tarafindan kullanilabilir."
+reload-success: "%prefix%&#00D420Tum yapilandirma ve onbellek basariyla yeniden yuklendi."
+reload-failed: "%prefix%&cReload basarisiz oldu, eski yapilandirma korunuyor. &7(%error%)"
+unknown-command: "%prefix%&7Kullanim: &#ffd500/mossshop reload"
