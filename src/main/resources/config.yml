@@ -54,7 +54,13 @@ market:
     - ""
     - "&#ffd500▸ &7Satin almak icin tikla!"
 
-  # Istege bagli dekorasyon itemleri
+  # Istege bagli dekorasyon itemleri.
+  # Bir dekorasyona 'commands' eklenirse, ana market menusunde o slota
+  # tiklaninca komutlar calisir (tiklanabilir buton). Komut bicimi:
+  #   "[console] ..."  -> konsoldan (yalnizca whitelist: market, spawn, hub)
+  #   "[player] ..."   -> oyuncudan
+  #   "<komut>"        -> oyuncudan (prefix'siz)
+  # Placeholder: %player%
   decorations:
     info:
       slot: 4
@@ -63,6 +69,17 @@ market:
       lore:
         - "&7Asagidaki urunlere tiklayarak"
         - "&7satin alma menusunu acabilirsin."
+
+    # Tiklanabilir buton ornegi (acmak icin yorum satirlarini kaldir):
+    # oyuncuyu sunucu lobisine gonderir.
+    # back:
+    #   slot: 49
+    #   material: BARRIER
+    #   name: "&cCikis"
+    #   lore:
+    #     - "&7Sunucu lobisine don."
+    #   commands:
+    #     - "[player] hub"
 
 # ----------------------- SATIN ALMA MENUSU -----------------------
 purchase-menu:

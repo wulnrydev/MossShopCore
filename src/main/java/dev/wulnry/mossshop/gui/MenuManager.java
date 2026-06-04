@@ -56,6 +56,8 @@ public final class MenuManager {
      * kurulur.
      */
     private ItemStack[] cachedMarketContents;
+    /** Ana market dekorasyon slotu -> tiklaninca calisacak komutlar. */
+    private final Map<Integer, List<String>> marketActions = new HashMap<>();
 
     // ---- Satin alma menusu onbellegi ----
     private String purchaseTitle;
@@ -110,7 +112,8 @@ public final class MenuManager {
                 }
             }
 
-            // Dekorasyon itemleri
+            // Dekorasyon itemleri (istege bagli tiklama komutlariyla)
+            marketActions.clear();
             ConfigurationSection decorations = market.getConfigurationSection("decorations");
             if (decorations != null) {
                 for (String key : decorations.getKeys(false)) {
@@ -122,6 +125,11 @@ public final class MenuManager {
                     ItemStack item = ItemBuilder.fromSection(plugin, deco, Collections.emptyMap());
                     if (item != null && slot >= 0 && slot < marketSize) {
                         template[slot] = item;
+                        // 'commands' tanimliysa bu dekorasyon tiklanabilir bir butona donusur.
+                        List<String> commands = deco.getStringList("commands");
+                        if (!commands.isEmpty()) {
+                            marketActions.put(slot, commands);
+                        }
                     }
                 }
             }
@@ -317,16 +325,23 @@ public final class MenuManager {
 
     public void handleMarketClick(Player player, int slot) {
         ShopItem item = shopManager.bySlot().get(slot);
-        if (item == null) {
+        if (item != null) {
+            if (!canUse(player, item)) {
+                messages.send(player, "no-permission");
+                SoundUtil.play(player, plugin.getConfig().getConfigurationSection("sounds.error"));
+                return;
+            }
+            SoundUtil.play(player, plugin.getConfig().getConfigurationSection("sounds.click"));
+            openPurchase(player, item);
             return;
         }
-        if (!canUse(player, item)) {
-            messages.send(player, "no-permission");
-            SoundUtil.play(player, plugin.getConfig().getConfigurationSection("sounds.error"));
-            return;
+
+        // Urun degilse, tiklanan slot 'commands' tanimli bir dekorasyon olabilir.
+        List<String> actions = marketActions.get(slot);
+        if (actions != null && !actions.isEmpty()) {
+            SoundUtil.play(player, plugin.getConfig().getConfigurationSection("sounds.click"));
+            runCommands(player, actions);
         }
-        SoundUtil.play(player, plugin.getConfig().getConfigurationSection("sounds.click"));
-        openPurchase(player, item);
     }
 
     /**
@@ -406,7 +421,18 @@ public final class MenuManager {
             openMarket(player);
             return;
         }
-        for (String raw : backCommands) {
+        runCommands(player, backCommands);
+    }
+
+    /**
+     * Bir menu butonuna/dekorasyona bagli komut listesini calistirir.
+     * {@code [console]} komutlari whitelist'e tabidir; {@code [player]} ve duz
+     * komutlar oyuncudan calisir. Placeholder: {@code %player%}.
+     * Hem satin alma menusu geri-don butonu hem de ana market dekorasyonlari
+     * tarafindan paylasilir.
+     */
+    private void runCommands(Player player, List<String> commands) {
+        for (String raw : commands) {
             if (raw == null || raw.isBlank()) {
                 continue;
             }
@@ -416,7 +442,7 @@ public final class MenuManager {
                 if (!isConsoleCommandAllowed(consoleCommand)) {
                     // Guvenlik: yanlis/manipule edilmis config'in (orn. "op %player%")
                     // konsol yetkisiyle calismasini engelle.
-                    plugin.getLogger().severe("Izin verilmeyen [console] back-button komutu engellendi: '"
+                    plugin.getLogger().severe("Izin verilmeyen [console] menu komutu engellendi: '"
                             + consoleCommand + "'. Izinli komutlar: " + ALLOWED_CONSOLE_COMMANDS);
                     continue;
                 }
